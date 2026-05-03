@@ -1,43 +1,52 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link type="text/css" href="css.css" rel="stylesheet" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css.css" />
 </head>
-<body id="body" style="width:800px;height:600px; margin:0px; padding:0px;" overflow:hidden;>
-<div style="height:0px; overflow:hidden;"></div>
-<p id="cs" style="display:none;">abc</p>
-<b id="b">吃掉的食物数：0</b><br/>
-<b id="cs3">我的分数：0</b>
-<ul id="menu">
-	<li id="restart" title="本次分数全没">restart</li>
-    <li id="startorstop" title="暂停或继续">stop</li>
+<body id="body">
+  <main id="playground" aria-label="萌萌追逐小游戏">
+    <section id="hud" aria-label="游戏状态">
+      <div class="stat">
+        <span class="stat-label">甜点</span>
+        <strong id="b">0</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">分数</span>
+        <strong id="cs3">0</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">速度</span>
+        <strong id="speedText">1x</strong>
+      </div>
+    </section>
 
-</ul>
-<img src="images/a_07.jpg" id="boss" alt="abc" draggable="false" />
-<img src="images/a_03.jpg" id="bossMax" />
-<img src="images/a_10.jpg" id="foods" />
-<div id="foodfs">ppp</div>
-<div id="gameover">
-	<h1>Game Over</h1>
-		<p id="die">死了：0次</p>
-		<p id="food">吃掉的食物：0个</p>
-		<p id="level">分数：0分</p>
+    <div id="menu" aria-label="游戏操作">
+      <button id="restart" type="button" title="重新开始">重新</button>
+      <button id="startorstop" type="button" title="暂停或继续">暂停</button>
+    </div>
 
-</div>
-<script src="js.js" type="text/javascript" ></script>
+    <p id="hint">方向键移动，也可以按住鼠标拖着跑</p>
+    <p id="cs" aria-hidden="true"></p>
 
+    <img src="images/a_07.png" id="boss" alt="玩家" draggable="false" />
+    <img src="images/a_03.png" id="bossMax" alt="追逐者" draggable="false" />
+    <img src="images/a_10.png" id="foods" alt="甜点" draggable="false" />
 
+    <div id="foodfs" aria-hidden="true"></div>
 
+    <div id="gameover" role="dialog" aria-modal="true" aria-labelledby="gameoverTitle">
+      <div class="gameover-panel">
+        <h1 id="gameoverTitle">被抓到啦</h1>
+        <p id="die">挑战次数：0</p>
+        <p id="food">吃到甜点：0</p>
+        <p id="level">最终分数：0</p>
+        <button id="again" type="button">再玩一次</button>
+      </div>
+    </div>
+  </main>
 
-
-
-
-
-
-
-
-
-
+  <script src="js.js"></script>
 </body>
 </html>

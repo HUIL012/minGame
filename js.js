@@ -1,374 +1,378 @@
-var cs=document.getElementById("cs");
-var boss=document.getElementById("boss");
-var bossM=document.getElementById("bossMax");
-var gameover=document.getElementById("gameover");
-var foods=document.getElementById("foods");
-var foodfs=document.getElementById("foodfs");
-var cs2=document.getElementById("b");
-var cs3=document.getElementById("cs3");
-var fsfinde=document.getElementById("fsfinde");
-var die=document.getElementById("die"); //分数
-var food=document.getElementById("food");
-var level=document.getElementById("level");
-var restart=document.getElementById('restart');  //restart按钮
-var startorstop=document.getElementById('startorstop');
-var z;
-var bossSpeed=13;  //boss速度
-var mySpeed=5;  //my速度
-var foodsCount=0;  //吃掉食物数
-var ten=10;   //每隔10个食物boss就加快
-var fs=0;  //分数
-var fsB=10;  //根据boss的速度来改变加分的情况
-var dies=0; //死了次数
-var stsp=0; //start和stop按钮
-var bossZd=0; //boos走动按钮
-var mousedownbutton=0;
+var GAME_WIDTH = 800;
+var GAME_HEIGHT = 600;
 
-var BossZ=setInterval(function(){  //boss自动走动
-	BosszFun();
-},bossSpeed);
+var player = document.getElementById("boss");
+var chaser = document.getElementById("bossMax");
+var food = document.getElementById("foods");
+var gameover = document.getElementById("gameover");
+var foodScore = document.getElementById("foodfs");
+var eatenText = document.getElementById("b");
+var scoreText = document.getElementById("cs3");
+var speedText = document.getElementById("speedText");
+var dieText = document.getElementById("die");
+var foodText = document.getElementById("food");
+var levelText = document.getElementById("level");
+var restart = document.getElementById("restart");
+var startOrStop = document.getElementById("startorstop");
+var again = document.getElementById("again");
 
-Start();
-//开始
-function Start(){
-boss.style.top="50%";
-boss.style.left="50%";
-bossM.style.top="0px";
-bossM.style.left="800px";
-gameover.style.display="none";
-Sjw();   //食物的随机位置
+var state = {
+  playerX: 380,
+  playerY: 275,
+  chaserX: 760,
+  chaserY: 18,
+  foodX: 120,
+  foodY: 120,
+  score: 0,
+  eaten: 0,
+  deaths: 0,
+  running: true,
+  gameEnded: false,
+  scoreStep: 10,
+  chaserSpeed: 76,
+  playerSpeed: 245,
+  pointerActive: false,
+  pointerX: 380,
+  pointerY: 275,
+  lastTime: 0
+};
 
-foodsCount=0;  //食物归零
-clearInterval(BossZ);    //先停止boss走动
-bossSpeed=13;  //boss速度
-BossZ=setInterval(function(){   //再开启boss走动
-	BosszFun();
-},bossSpeed);
-ten=10;
-fs=0;
-fsB=10;
-cs3.innerHTML="您所得的分数："+fs;
-cs2.innerHTML="吃掉的食物数："+foodsCount;
-foodfs.innerHTML="";
-dies++;  //死了就加一
-Bstart();
-}
-//判断boss速度
-setInterval(function(){
-		
-	if(foodsCount==ten){
-		clearInterval(BossZ);    //先停止boss走动          
-		bossSpeed--;   //每隔10个食物boss减一
-		fsB+=10;
-		ten+=10;
-		BossZ=setInterval(function(){   //再开启boss走动
-			BosszFun();
-		},bossSpeed);
-	}
-},1);
-//分数
+var keys = {
+  ArrowUp: false,
+  ArrowDown: false,
+  ArrowLeft: false,
+  ArrowRight: false
+};
 
+var playerSize = { width: 39, height: 50 };
+var chaserSize = { width: 43, height: 54 };
+var foodSize = { width: 43, height: 46 };
 
-//boss走动函数
-function BosszFun(){
-	var t=boss.offsetTop;   //图top
-	var l=boss.offsetLeft;     //left
-	var tM=bossM.offsetTop;   //boss top
-	var lM=bossM.offsetLeft;     //left
-	if(bossZd==0){
-		if(t>tM){
-			bossM.style.top=tM+1+"px";
-		}
-		if(t<tM){
-			bossM.style.top=tM-1+"px";
-		}
-		if(l>lM){
-			bossM.style.left=lM+1+"px";
-		}
-		if(l<lM){
-			bossM.style.left=lM-1+"px";
-		}
-	}
-	
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }
 
-
-
-
-//按键
-var s=0;
-var x=0;
-var zuo=0;
-var y=0;
-var enter=0;
-document.onkeydown =keydown;
-document.onkeyup = keyup;
-function keydown(e){
-var e=e||event;
-var currKey=e.keyCode||e.which||e.charCode;
-if(currKey==13){enter=1;}
-if(currKey==38){s=1;}
-if(currKey==40){x=1;}
-if(currKey==37){zuo=1;}
-if(currKey==39){y=1;}
-}
-function keyup(e){
-var e=e||event;
-var currKey=e.keyCode||e.which||e.charCode;
-if(currKey==13){enter=0;}
-if(currKey==38){s=0;}
-if(currKey==40){x=0;}
-if(currKey==37){zuo=0;}
-if(currKey==39){y=0;}
-}
-setInterval(function(){
-	
-	var t=boss.offsetTop;
-	var l=boss.offsetLeft;
-	var w=boss.width;
-	var h=boss.height;
-	if(s>0){
-		if(t<0){
-			boss.style.top=0+"px";
-		}else{
-			boss.style.top=t-1+"px";
-		}
-	}
-	if(x>0){
-		if(t>(600-h)){
-			boss.style.top=600-h+"px";
-		}else{
-			boss.style.top=t+1+"px";
-		}
-	}
-	if(zuo>0){
-		if(l<0){
-			boss.style.left=0+"px";
-		}else{
-			boss.style.left=l-1+"px";
-		}
-	}
-	if(y>0){
-		if(l>(800-w)){
-			boss.style.left=800-w+"px";
-		}else{
-			boss.style.left=l+1+"px";
-		}
-	}
-},mySpeed);
-
-//鼠标
-var dj=0;
-var xx,yy;
-var moustartorstop=1;
-document.onmousedown=function(e){
-	z=true;
-	e=e||event;
-	if(e.button==2){
-		
-	}
-	document.onmousemove=function(e){
-		e=e||event;
-		  var x=e.clientX;
-		  var y=e.clientY;
-		  var t=boss.offsetTop;
-		  var l=boss.offsetLeft;
-		  var w=boss.width;
-		  var h=boss.height;
-		  x=x-w/2;
-		  y=y-h/2;
-		  xx=x;
-		  yy=y;
-		if(z==true){
-			cs.innerHTML="鼠标移动坐标："+x+" "+y;
-			if(t<0){
-				boss.style.top="0px";
-				return false;
-			}
-			if(t>(600-h)){
-				boss.style.top=600-h+"px";
-				return false;
-			}
-			if(l<0){
-				boss.style.left="0px";
-				return false;
-			}
-			if(l>(800-w)){
-				boss.style.left=800-w+"px";
-				return false;
-			}
-			if(moustartorstop==1){
-				boss.style.top=t+(y-t)/100+"px";
-				boss.style.left=l+(x-l)/100+"px";
-			}
-			
-		}
-	}
-	dj=1;
-	document.onmouseup=function(){z=false;dj=0;}
-}
-var mouseDown=setInterval(function(e){
-	var t=boss.offsetTop;
-	var l=boss.offsetLeft;
-	if(mousedownbutton==0){
-		if(dj==1){
-			if(yy>t){
-				boss.style.top=t+1+"px";
-			}
-			if(yy<t){
-				boss.style.top=t-1+"px";
-			}
-			if(xx>l){
-				boss.style.left=l+1+"px";
-			}
-			if(xx<l){
-				boss.style.left=l-1+"px";
-			}
-		}
-	}
-	
-},10);
-//判断小鬼是否捉到我
-setInterval(function(){
-	var myt=boss.offsetTop;
-	var myl=boss.offsetLeft;
-	var bosst=bossM.offsetTop;
-	var bossl=bossM.offsetLeft;
-	var myw=boss.offsetWidth;
-	var myh=boss.offsetHeight;
-	var bossw=bossM.offsetWidth;
-	var bossh=bossM.offsetHeight;
-	//用for判断坐标
-	for(var i=0;i<=myw;i++){
-		for(var j=0;j<=myh;j++){
-			for(var e=0;e<=bossw;e++){
-				for(var r=0;r<=bossh;r++){
-					if(myl+i==bossl+e && myt+j==bosst+r){
-						gameover.style.display="block";
-						gameover.onclick=function(){Start();}
-						if(enter==1){Start();}
-						LastFs();
-						Bstop();
-						return false;
-					}
-				}
-			}
-			
-		}
-		
-	}
-},1);
-
-//随机物
-function Sjw(){
-	var fw=foods.offsetWidth;
-	var fh=foods.offsetHeight;
-	var st=Math.ceil(Math.random()*(600-fh))-1;
-	var sl=Math.ceil(Math.random()*(600-fw))-1;
-	foods.style.top=st+"px";
-	foods.style.left=sl+"px";
-	
-	fs+=fsB;
-	cs3.innerHTML="您所得的分数："+fs;
-	
-	
-}
-setInterval(function(){
-	var myt=boss.offsetTop;
-	var myl=boss.offsetLeft;
-	var ft=foods.offsetTop;
-	var fl=foods.offsetLeft;
-	var myw=boss.offsetWidth;
-	var myh=boss.offsetHeight;
-	var fw=foods.offsetWidth;
-	var fh=foods.offsetHeight;
-	//用for判断坐标
-	for(var i=0;i<=myw;i++){
-		for(var j=0;j<=myh;j++){
-			for(var e=0;e<=fw;e++){
-				for(var r=0;r<=fh;r++){
-					if((myl+i==fl+e) && (myt+j==ft+r)){
-						
-						foodsCount++;
-						cs2.innerHTML="吃掉的食物数："+foodsCount;
-						Sjwfs(ft,fl,fsB); //随机物分数
-						Sjw();
-						return false;
-					}
-				}
-			}
-			
-		}
-		
-	}
-	
-},1);
-
-function Sjwfs(ft,fl,fsB){
-	var Zsize=0; //字体大小
-	var Cr=Math.ceil(Math.random()*(256))-1;  //字体颜色
-	var Cg=Math.ceil(Math.random()*(256))-1;
-	var Cb=Math.ceil(Math.random()*(256))-1;
-	var Ft=9;  //字体透明度
-		foodfs.innerHTML="<h2 id=\"fsBs\" style=\"position:fixed ;top:"+ft+"px;left:"+fl+"px; font:22px \'Arial\'; color:rgba("+Cr+","+Cg+","+Cb+",."+Ft+");\">"+fsB+"</h2>";
+function setPosition(element, x, y) {
+  element.style.left = x + "px";
+  element.style.top = y + "px";
 }
 
-function LastFs(){
-	die.innerHTML="死了:"+dies+"次";
-	food.innerHTML="吃掉的食物:"+foodsCount+"个";
-	level.innerHTML="分数:"+fs+"分";
-}
-//判断是否停止
-function Bstop(){
-	bossZd=1;
-	moustartorstop=0;
-	mousedownbutton=1;
-	startorstop.innerHTML="start";
-}
-function Bstart(){
-	bossZd=0;
-	moustartorstop=1;
-	mousedownbutton=0;
-	startorstop.innerHTML="stop";
-}
-setInterval(function(){
-	restart.onclick=function(){
-		Start();
-		dies--;
-		stsp=0;
-		Batart();
-		bossZd=0;
-	};
-	startorstop.onclick=function(){
-		if(stsp%2==0){
-			Bstop();
-		}else{
-			Bstart();
-		}
-		stsp++;
-	}
-},1);
-//去除鼠标右键菜单
-document.oncontextmenu = function (event){
-    if(window.event){
-        event = window.event;
-    }try{
-        var the = event.srcElement;
-        if (!((the.tagName == "INPUT" && the.type.toLowerCase() == "text") || the.tagName == "TEXTAREA")){
-            return false;
-        }
-        return true;
-    }catch (e){
-        return false; 
-    } 
+function centerOf(x, y, size) {
+  return {
+    x: x + size.width / 2,
+    y: y + size.height / 2
+  };
 }
 
+function distance(a, b) {
+  var dx = a.x - b.x;
+  var dy = a.y - b.y;
+  return Math.sqrt(dx * dx + dy * dy);
+}
 
+function rectsOverlap(a, b) {
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+}
 
+function randomFoodPosition() {
+  var padding = 36;
+  var playerCenter = centerOf(state.playerX, state.playerY, playerSize);
+  var nextX = 0;
+  var nextY = 0;
+  var attempts = 0;
 
+  do {
+    nextX = padding + Math.random() * (GAME_WIDTH - foodSize.width - padding * 2);
+    nextY = 78 + Math.random() * (GAME_HEIGHT - foodSize.height - 124);
+    attempts++;
+  } while (
+    attempts < 20 &&
+    distance(playerCenter, centerOf(nextX, nextY, foodSize)) < 130
+  );
 
+  state.foodX = Math.round(nextX);
+  state.foodY = Math.round(nextY);
+  setPosition(food, state.foodX, state.foodY);
+}
 
+function updateHud() {
+  eatenText.textContent = state.eaten;
+  scoreText.textContent = state.score;
+  speedText.textContent = (state.chaserSpeed / 76).toFixed(1) + "x";
+}
 
+function showScorePop(x, y, amount) {
+  var pop = document.createElement("span");
+  pop.className = "score-pop";
+  pop.textContent = "+" + amount;
+  pop.style.left = x + "px";
+  pop.style.top = y + "px";
+  foodScore.appendChild(pop);
+  window.setTimeout(function () {
+    pop.remove();
+  }, 760);
+}
 
+function resetGame(countDeath) {
+  if (countDeath) {
+    state.deaths++;
+  }
 
+  state.playerX = Math.round((GAME_WIDTH - playerSize.width) / 2);
+  state.playerY = Math.round((GAME_HEIGHT - playerSize.height) / 2);
+  state.chaserX = GAME_WIDTH - chaserSize.width - 24;
+  state.chaserY = 24;
+  state.pointerX = state.playerX;
+  state.pointerY = state.playerY;
+  state.score = 0;
+  state.eaten = 0;
+  state.scoreStep = 10;
+  state.chaserSpeed = 76;
+  state.running = true;
+  state.gameEnded = false;
+  state.pointerActive = false;
+  state.lastTime = 0;
 
+  gameover.classList.remove("show");
+  foodScore.innerHTML = "";
+  startOrStop.textContent = "暂停";
+  player.classList.remove("is-moving");
+  setPosition(player, state.playerX, state.playerY);
+  setPosition(chaser, state.chaserX, state.chaserY);
+  randomFoodPosition();
+  updateHud();
+}
+
+function endGame() {
+  if (state.gameEnded) {
+    return;
+  }
+
+  state.gameEnded = true;
+  state.running = false;
+  state.deaths++;
+  player.classList.remove("is-moving");
+  startOrStop.textContent = "继续";
+  dieText.textContent = "挑战次数：" + state.deaths;
+  foodText.textContent = "吃到甜点：" + state.eaten;
+  levelText.textContent = "最终分数：" + state.score;
+  gameover.classList.add("show");
+}
+
+function eatFood() {
+  var earned = state.scoreStep;
+  state.eaten++;
+  state.score += earned;
+
+  if (state.eaten % 10 === 0) {
+    state.chaserSpeed += 16;
+    state.scoreStep += 10;
+  }
+
+  food.classList.remove("is-eaten");
+  void food.offsetWidth;
+  food.classList.add("is-eaten");
+  showScorePop(state.foodX + 8, state.foodY - 4, earned);
+  randomFoodPosition();
+  updateHud();
+}
+
+function moveToward(current, target, maxStep) {
+  var delta = target - current;
+  if (Math.abs(delta) <= maxStep) {
+    return target;
+  }
+  return current + Math.sign(delta) * maxStep;
+}
+
+function updatePlayer(delta) {
+  var horizontal = 0;
+  var vertical = 0;
+
+  if (keys.ArrowLeft) horizontal--;
+  if (keys.ArrowRight) horizontal++;
+  if (keys.ArrowUp) vertical--;
+  if (keys.ArrowDown) vertical++;
+
+  var moving = horizontal !== 0 || vertical !== 0 || state.pointerActive;
+  var step = state.playerSpeed * delta;
+
+  if (horizontal !== 0 && vertical !== 0) {
+    step *= Math.SQRT1_2;
+  }
+
+  state.playerX += horizontal * step;
+  state.playerY += vertical * step;
+
+  if (state.pointerActive) {
+    state.playerX = moveToward(state.playerX, state.pointerX - playerSize.width / 2, step * 1.08);
+    state.playerY = moveToward(state.playerY, state.pointerY - playerSize.height / 2, step * 1.08);
+  }
+
+  state.playerX = clamp(state.playerX, 0, GAME_WIDTH - playerSize.width);
+  state.playerY = clamp(state.playerY, 0, GAME_HEIGHT - playerSize.height);
+  player.classList.toggle("is-moving", moving && state.running);
+  setPosition(player, Math.round(state.playerX), Math.round(state.playerY));
+}
+
+function updateChaser(delta) {
+  var playerCenter = centerOf(state.playerX, state.playerY, playerSize);
+  var chaserCenter = centerOf(state.chaserX, state.chaserY, chaserSize);
+  var dx = playerCenter.x - chaserCenter.x;
+  var dy = playerCenter.y - chaserCenter.y;
+  var length = Math.sqrt(dx * dx + dy * dy) || 1;
+  var step = state.chaserSpeed * delta;
+
+  state.chaserX += (dx / length) * step;
+  state.chaserY += (dy / length) * step;
+  state.chaserX = clamp(state.chaserX, 0, GAME_WIDTH - chaserSize.width);
+  state.chaserY = clamp(state.chaserY, 0, GAME_HEIGHT - chaserSize.height);
+  setPosition(chaser, Math.round(state.chaserX), Math.round(state.chaserY));
+}
+
+function checkCollisions() {
+  var playerRect = {
+    x: state.playerX + 7,
+    y: state.playerY + 7,
+    width: playerSize.width - 14,
+    height: playerSize.height - 12
+  };
+  var chaserRect = {
+    x: state.chaserX + 8,
+    y: state.chaserY + 8,
+    width: chaserSize.width - 16,
+    height: chaserSize.height - 14
+  };
+  var foodRect = {
+    x: state.foodX + 6,
+    y: state.foodY + 6,
+    width: foodSize.width - 12,
+    height: foodSize.height - 12
+  };
+
+  if (rectsOverlap(playerRect, foodRect)) {
+    eatFood();
+  }
+
+  if (rectsOverlap(playerRect, chaserRect)) {
+    endGame();
+  }
+}
+
+function gameLoop(time) {
+  if (!state.lastTime) {
+    state.lastTime = time;
+  }
+
+  var delta = Math.min((time - state.lastTime) / 1000, 0.032);
+  state.lastTime = time;
+
+  if (state.running && !state.gameEnded) {
+    updatePlayer(delta);
+    updateChaser(delta);
+    checkCollisions();
+  }
+
+  window.requestAnimationFrame(gameLoop);
+}
+
+function setPaused(paused) {
+  if (state.gameEnded) {
+    return;
+  }
+
+  state.running = !paused;
+  state.pointerActive = false;
+  startOrStop.textContent = paused ? "继续" : "暂停";
+  player.classList.remove("is-moving");
+}
+
+function getPointerPosition(event) {
+  var rect = document.getElementById("playground").getBoundingClientRect();
+  return {
+    x: clamp(event.clientX - rect.left, 0, GAME_WIDTH),
+    y: clamp(event.clientY - rect.top, 0, GAME_HEIGHT)
+  };
+}
+
+document.addEventListener("keydown", function (event) {
+  if (event.key in keys) {
+    keys[event.key] = true;
+    event.preventDefault();
+  }
+
+  if (event.key === " " || event.key === "Enter") {
+    if (state.gameEnded) {
+      resetGame(false);
+    } else {
+      setPaused(state.running);
+    }
+    event.preventDefault();
+  }
+});
+
+document.addEventListener("keyup", function (event) {
+  if (event.key in keys) {
+    keys[event.key] = false;
+    event.preventDefault();
+  }
+});
+
+document.addEventListener("pointerdown", function (event) {
+  if (event.button !== 0 || state.gameEnded || !state.running) {
+    return;
+  }
+
+  var point = getPointerPosition(event);
+  state.pointerActive = true;
+  state.pointerX = point.x;
+  state.pointerY = point.y;
+});
+
+document.addEventListener("pointermove", function (event) {
+  if (!state.pointerActive) {
+    return;
+  }
+
+  var point = getPointerPosition(event);
+  state.pointerX = point.x;
+  state.pointerY = point.y;
+});
+
+document.addEventListener("pointerup", function () {
+  state.pointerActive = false;
+});
+
+document.addEventListener("pointerleave", function () {
+  state.pointerActive = false;
+});
+
+document.addEventListener("contextmenu", function (event) {
+  event.preventDefault();
+});
+
+restart.addEventListener("click", function () {
+  resetGame(false);
+});
+
+startOrStop.addEventListener("click", function () {
+  setPaused(state.running);
+});
+
+again.addEventListener("click", function () {
+  resetGame(false);
+});
+
+gameover.addEventListener("click", function (event) {
+  if (event.target === gameover) {
+    resetGame(false);
+  }
+});
+
+resetGame(false);
+window.requestAnimationFrame(gameLoop);
